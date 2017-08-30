@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import me.devnatan.gameapi.game.GameUtils;
-
 public class MapManager {
 
-	private static final List<Map> maps = new ArrayList<Map>();
+	private final List<Map> maps = new ArrayList<Map>();
 	
 	public List<Map> getMaps() {
 		return maps;
@@ -22,10 +20,6 @@ public class MapManager {
 	
 	public Map random() {
 		return maps.get(new Random().nextInt(maps.size()));
-	}
-	
-	public static final void load() {
-		maps.add(GameUtils.makeMap("Viuva Negra", "Um mapa ai do crossfire", MapSize.BIG));
 	}
 	
 }

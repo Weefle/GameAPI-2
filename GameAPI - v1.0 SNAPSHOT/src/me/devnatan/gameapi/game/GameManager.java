@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class GameManager {
 	
-	private static final Set<Game> games = new HashSet<Game>();
+	private final Set<Game> games = new HashSet<Game>();
 	
 	public Set<Game> getGames() {
 		return games;

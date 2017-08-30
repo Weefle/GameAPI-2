@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class RoomManager {
 
-	private static final Set<Room> rooms = new HashSet<Room>();
+	private final Set<Room> rooms = new HashSet<Room>();
 	
 	public Set<Room> getRooms() {
 		return rooms;
