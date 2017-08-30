@@ -5,4 +5,4 @@ author: DevNatan
 website: https://github.com/DevNatan/
 load: STARTUP
 description: A easy API to develop fps games.
-prefix: "GameAPI by DevNatan"
+prefix: "GameAPI"

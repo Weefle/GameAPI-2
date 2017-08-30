@@ -1,5 +1,7 @@
 package me.devnatan.gameapi;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +20,15 @@ public final class GameAPI extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
+	}
+	
+	public void onEnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				if(GamePlugin.getPlugins().size() > 0)
+					getLogger().info("Plugins registered: " + Arrays.toString(GamePlugin.getPlugins().toArray()).toString().replace("]", "").replace("[", ""));
+			}
+		});
 	}
 	
 	private boolean hasGson() {
