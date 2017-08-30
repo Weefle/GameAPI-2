@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.devnatan.gameapi.gson.Gson;
+import me.devnatan.gameapi.gson.Gson_1_7_R4;
 import me.devnatan.gameapi.gson.Gson_1_8_R1;
 import me.devnatan.gameapi.gson.Gson_1_8_R3;
 
@@ -44,6 +45,8 @@ public final class GameAPI extends JavaPlugin {
             _GSON = new Gson_1_8_R1();
         } else if(version.equals("v1_8_R3")) {
         	_GSON = new Gson_1_8_R3();
+        } else if(version.equals("v1_7_R4")) {
+        	_GSON = new Gson_1_7_R4();
         }
         
         return (_GSON != null ? true : false);
