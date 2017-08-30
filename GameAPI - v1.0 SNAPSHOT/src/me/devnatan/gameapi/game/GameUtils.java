@@ -3,12 +3,15 @@ package me.devnatan.gameapi.game;
 import java.util.Random;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.google.common.collect.Lists;
 
 import me.devnatan.gameapi.bomb.Bomb;
 import me.devnatan.gameapi.bomb.BombState;
+import me.devnatan.gameapi.events.BombDefuseEvent;
+import me.devnatan.gameapi.events.BombPlantEvent;
 import me.devnatan.gameapi.map.Map;
 import me.devnatan.gameapi.map.MapSize;
 import me.devnatan.gameapi.moderation.Moderator;
@@ -323,6 +326,25 @@ public class GameUtils {
 	}
 	
 	/**
+	 * Plant a bomb and start your timer.
+	 * Note: the {@code BombPlantEvent} event, now fires using this method.
+	 * @param bomb = the bomb
+	 * @param planter = the planter.
+	 */
+	public static void plant(Bomb bomb, Player planter) {
+		Validate.notNull(bomb, "Bomb cannot be null!");
+		Validate.notNull(bomb.getGame(), "Bomb cannot be null!");
+		Validate.notNull(planter, "Planter cannot be null!");
+		
+		bomb.setState(BombState.PLANTED);
+		bomb.setCurrent(planter);
+		bomb.getTimer().setElapsed(0);
+		bomb.getTimer().start();
+		
+		Bukkit.getPluginManager().callEvent(new BombPlantEvent(bomb, planter));
+	}
+	
+	/**
 	 * Plant the bomb a game and start your timer.
 	 * Note: the {@code BombPlantEvent} event not fire using this method.
 	 * @param game = the game
@@ -335,6 +357,26 @@ public class GameUtils {
 		game.getBomb().setState(BombState.PLANTED);
 		game.getBomb().getTimer().setElapsed(0);
 		game.getBomb().getTimer().start();
+	}
+	
+	/**
+	 * Plant a bomb and start your timer.
+	 * Note: the {@code BombPlantEvent} event, now fires using this method.
+	 * @param bomb = the bomb
+	 * @param planter = the planter.
+	 */
+	public static void plant(Game game, Player planter) {
+		Validate.notNull(game, "Game cannot be null!");
+		Validate.notNull(game.getBomb(), "Bomb cannot be null!");
+		Validate.notNull(game.getBomb().getLocation(), "Bomb Location cannot be null!");
+		Validate.notNull(planter, "Planter cannot be null!");
+		
+		game.getBomb().setState(BombState.PLANTED);
+		game.getBomb().setCurrent(planter);
+		game.getBomb().getTimer().setElapsed(0);
+		game.getBomb().getTimer().start();
+		
+		Bukkit.getPluginManager().callEvent(new BombPlantEvent(game.getBomb(), planter));
 	}
 	
 	/**
@@ -352,8 +394,28 @@ public class GameUtils {
 		game.getBomb().getTimer().setElapsed(0);
 		game.getBomb().getTimer().start();
 	}
-
 	
+	/**
+	 * Defines the location of the bomb, plant this bomb at the set location of a game, and start its timer.
+	 * Note: the {@code BombPlantEvent} event, now fires using this method.
+	 * @param game = the game
+	 * @param location = the location
+	 * @param planter = the planter
+	 */
+	public static void plantAt(Game game, Location location, Player planter) {
+		Validate.notNull(game, "Game cannot be null!");
+		Validate.notNull(location, "Location cannot be null!");
+		Validate.notNull(planter, "Planter cannot be null!");
+		
+		game.getBomb().setState(BombState.PLANTED);
+		game.getBomb().setLocation(location);
+		game.getBomb().setCurrent(planter);
+		game.getBomb().getTimer().setElapsed(0);
+		game.getBomb().getTimer().start();
+		
+		Bukkit.getPluginManager().callEvent(new BombPlantEvent(game.getBomb(), planter));
+	}
+
 	/**
 	 * Defines the location of the bomb, defines the time of destruction, plant this bomb at the set location of a game, and starts its timer.
 	 * Note: the {@code BombPlantEvent} event not fire using this method.
@@ -370,7 +432,31 @@ public class GameUtils {
 		game.getBomb().setState(BombState.PLANTED);
 		game.getBomb().getTimer().setElapsed(0);
 		game.getBomb().getTimer().setTime(time);
+		game.getBomb().getTimer().start();		
+	}
+	
+	/**
+	 * Defines the location of the bomb, defines the time of destruction, plant this bomb at the set location of a game, and starts its timer.
+	 * Note: the {@code BombPlantEvent} event not fire using this method.
+	 * @param game = the game
+	 * @param location = the location
+	 * @param time = the time to explode
+	 * @param planter = the planter
+	 */
+	public static void plantAt(Game game, Location location, int time, Player planter) {
+		Validate.notNull(game, "Game cannot be null!");
+		Validate.notNull(location, "Location cannot be null!");
+		if(time < 0) throw new NumberFormatException("Time cannot be negative!");
+		Validate.notNull(planter, "Planter cannot be null!");
+		
+		game.getBomb().setLocation(location);
+		game.getBomb().setState(BombState.PLANTED);
+		game.getBomb().setCurrent(planter);
+		game.getBomb().getTimer().setElapsed(0);
+		game.getBomb().getTimer().setTime(time);
 		game.getBomb().getTimer().start();
+		
+		Bukkit.getPluginManager().callEvent(new BombPlantEvent(game.getBomb(), planter));
 	}
 	
 	/**
@@ -388,7 +474,7 @@ public class GameUtils {
 	
 	/**
 	 * Defuse a game's bomb and define player as defuser.
-	 * Note: the {@code BombDefuseEvent} event not fire using this method.
+	 * Note: the {@code BombDefuseEvent} event, now fires using this method.
 	 * @param bomb = the bomb
 	 * @param defuser = the player
 	 */
@@ -400,6 +486,8 @@ public class GameUtils {
 		bomb.setCurrent(defuser);
 		bomb.setState(BombState.DEFUSED);
 		bomb.getTimer().stop();
+		
+		Bukkit.getPluginManager().callEvent(new BombDefuseEvent(bomb, defuser));
 	}
 	
 	/**
@@ -412,12 +500,12 @@ public class GameUtils {
 		Validate.notNull(game.getBomb(), "Bomb cannot be null!");
 		
 		game.getBomb().setState(BombState.DEFUSED);
-		game.getBomb().getTimer().stop();
+		game.getBomb().getTimer().stop();		
 	}
 	
 	/**
 	 * Defuse a game's bomb and define the player as defuser.
-	 * Note: the {@code BombDefuseEvent} event not fire using this method.
+	 * Note: the {@code BombDefuseEvent} event, now fires using this method.
 	 * @param game = the game
 	 * @param defuser = the player
 	 */
@@ -429,6 +517,8 @@ public class GameUtils {
 		game.getBomb().setCurrent(defuser);
 		game.getBomb().setState(BombState.DEFUSED);
 		game.getBomb().getTimer().stop();
+		
+		Bukkit.getPluginManager().callEvent(new BombDefuseEvent(game.getBomb(), defuser));
 	}
 	
 	//
